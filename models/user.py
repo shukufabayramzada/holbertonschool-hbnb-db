@@ -2,8 +2,6 @@ from models.baseclass import BaseClass
 import re
 from app import db
 
-
-
 class User(BaseClass):
     __tablename__ = 'users'
 
