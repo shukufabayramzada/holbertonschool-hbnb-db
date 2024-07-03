@@ -1,16 +1,16 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
-from Persistence.data_manager import DataManager
+from Model.baseclass import BaseClass
 
 Base = declarative_base()
 
 class City(Base):
     __tablename__ = 'cities'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    country_id = Column(Integer, ForeignKey('countries.id'), nullable=False)
+    id = Column(Integer(36), primary_key=True, autoincrement=True, nullable=False)
+    name = Column(String(50), nullable=False)
+    country_id = Column(Integer(36), ForeignKey('countries.id'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
