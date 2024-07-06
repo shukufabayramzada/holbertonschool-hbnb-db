@@ -1,12 +1,13 @@
 from models.baseclass import BaseClass
 import re
-from app import db
+from app import db, bcrypt
+
 
 class User(BaseClass):
     __tablename__ = 'users'
 
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
@@ -24,13 +25,19 @@ class User(BaseClass):
             raise ValueError("Email address already in use")
         
         self.email = email
-        self.password = password
+        self.set_password(password)
         self.first_name = first_name
         self.last_name = last_name
         self.is_admin = False
         self.host_id = host_id
         self.place_id = place_id
         self.reviews = reviews if reviews else []
+
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
 
     @staticmethod
     def email_check(email):
