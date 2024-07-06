@@ -1,59 +1,22 @@
 from models.baseclass import BaseClass
-import re
-from app import db, bcrypt
+from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
+from app import db 
 
-
-class User(BaseClass):
+class User(BaseClass, db.Model):
     __tablename__ = 'users'
 
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
-    host_id = db.Column(db.String(36), nullable=True)
-    place_id = db.Column(db.String(36), nullable=True)
-    reviews = db.Column(db.JSON, nullable=True, default=[])
+    id = Column(String(36), primary_key=True)
+    name = Column(String(100), nullable=False)
+    email = Column(String(120), unique=True, nullable=False)
+    password = Column(String(128), nullable=False)
+    is_admin = Column(String(128), default=False)
+    reviews = relationship('Review', backref='user', lazy=True)
+    amenities = relationship('Amenity', backref='user', lazy=True)
 
-    def __init__(self, email, password, first_name, last_name, host_id=None, place_id=None, reviews=None, created_at=None, updated_at=None, id=None):
-        super().__init__()
-        
-        if not self.is_valid_email(email):
-            raise ValueError("Invalid email address")
-        
-        if self.email_check(email):
-            raise ValueError("Email address already in use")
-        
+    def __init__(self, name, email, password, is_admin=False, id=None, created_at=None, updated_at=None):
+        super().__init__(id=id, created_at=created_at, updated_at=updated_at)
+        self.name = name
         self.email = email
-        self.set_password(password)
-        self.first_name = first_name
-        self.last_name = last_name
-        self.is_admin = False
-        self.host_id = host_id
-        self.place_id = place_id
-        self.reviews = reviews if reviews else []
-
-    def set_password(self, password):
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-
-    def check_password(self, password):
-        return bcrypt.check_password_hash(self.password_hash, password)
-
-    @staticmethod
-    def email_check(email):
-        return User.query.filter_by(email=email).first() is not None
-
-    @staticmethod
-    def is_valid_email(email):
-        pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-        return re.match(pattern, email) is not None
-
-    def not_own_review(self, host_id, place_id, review):
-        if host_id == place_id:
-            raise ValueError("Owners can't review their own places")
-        self.host_id = host_id
-        self.place_id = place_id
-        self.reviews.append(review)
-
-    def save(self):
-        super().save()
+        self.password = password
+        self.is_admin = is_admin
