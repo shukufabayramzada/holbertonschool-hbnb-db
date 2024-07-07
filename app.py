@@ -20,7 +20,7 @@ def create_app():
     
     # Configure Database
     DATABASE_TYPE = os.getenv('DATABASE_TYPE', 'sqlite')
-    if DATABASE_TYPE == 'sqlite':
+    if (DATABASE_TYPE == 'sqlite'):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///development.db'
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -51,6 +51,11 @@ def create_app():
     app.register_blueprint(place_controller, url_prefix='/api')
     app.register_blueprint(review_controller, url_prefix='/api')
     app.register_blueprint(user_bp, url_prefix='/api')
+
+    # Default route
+    @app.route('/')
+    def home():
+        return "Welcome to hbhb project part 2"
 
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
