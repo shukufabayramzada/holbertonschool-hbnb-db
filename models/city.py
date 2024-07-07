@@ -1,7 +1,7 @@
 from models.baseclass import BaseClass
 from sqlalchemy import Column, String, Integer, ForeignKey
-from sqlalchemy.orm import relationship
 from app import db
+from sqlalchemy.orm import relationship
 
 class City(BaseClass, db.Model):
     __tablename__ = 'cities'
