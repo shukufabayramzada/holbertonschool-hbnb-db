@@ -1,6 +1,7 @@
-from models.user import *
+# api/user_controller.py
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from models.user import User
 
 user_bp = Blueprint('user_bp', __name__)
 

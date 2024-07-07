@@ -1,9 +1,9 @@
 from models.baseclass import BaseClass
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-from app import db 
 
-class User(BaseClass, db.Model):
+
+class User(BaseClass):
     __tablename__ = 'users'
 
     id = Column(String(36), primary_key=True)

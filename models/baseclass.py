@@ -1,21 +1,17 @@
 import uuid
 from datetime import datetime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, DateTime
+from database import db
 
-Base = declarative_base()
-
-class BaseClass(Base):
+class BaseClass(db.Model):
     __abstract__ = True
     
-    id = Column(String(36), primary_key=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
-
-    def __init__(self):
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = self.created_at
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     def save(self):
+        if not self.id:
+            self.id = str(uuid.uuid4())
         self.updated_at = datetime.now()
+        db.session.add(self)
+        db.session.commit()
